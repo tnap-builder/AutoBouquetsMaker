@@ -1,0 +1,82 @@
+How to obtain a raw Transport Stream recording using a Sundtek tuner. (Please do not confuse with normal video recording in .ts format.)
+The transport stream recordings are useful for interrogating the data.
+
+Issue the following command, this will give you the tuner frontend node (on set top boxes usually adapter1)
+
+/opt/bin/mediaclient -e | grep adapter
+
+Output will be similar to
+ 
+
+     FRONTEND: /dev/dvb/adapter1/frontend0
+     DVR: /dev/dvb/adapter1/dvr0
+     DMX: /dev/dvb/adapter1/demux0
+     FRONTEND: /dev/dvb/adapter1/frontend0
+     DVR: /dev/dvb/adapter1/dvr0
+     DMX: /dev/dvb/adapter1/demux0
+     FRONTEND: /dev/dvb/adapter1/frontend0
+     DVR: /dev/dvb/adapter1/dvr0
+     DMX: /dev/dvb/adapter1/demux0
+
+
+Tune to your desired frequency. In this example, adapter is 1 and frontend is 0.
+You must ensure adapterN matches your tuner. (We got this using the mediaclient -e command)
+Modify the values according to your need (those sample values).
+
+For Terrestrial.
+
+/opt/bin/mediaclient -m DVBT -f 490000000 -b 8 -d /dev/dvb/adapter1/frontend0
+
+For Cable
+
+/opt/bin/mediaclient -m DVBC -f 667000000 -S 6952000 -M Q64 -d /dev/dvb/adapter1/frontend0
+
+-m device mode
+-f frequency in Hz
+-M modulation
+-S Symbol rate
+
+Ensure you get a LOCKED notification.
+
+If you don't know any cable frequency you might try doing a blind scan to figure out some frequencies on the console
+
+/opt/bin/mediaclient --blindscan /dev/dvb/adapter1/frontend0
+
+Make sure enigma2 is not accessing the tuner. Simplest thing to do is to disable the tuner in the tuner configuragion menu.
+
+/opt/bin/mediaclient --lc
+
+Snippet below shows nothing is connected
+ 
+
+root@tmnano3t:~# /opt/bin/mediaclient --lc
+**** List of Media Clients ****
+/dev/dvb/adapter1/frontend0:
+  No client connected
+/dev/dvb/adapter1/dvr0:
+  No client connected
+/dev/dvb/adapter1/demux0:
+  No client connected
+/dev/mediainput0:
+  No client connected
+
+
+This will list who is currently accessing the tuner this should show up "No client connected".
+
+Once your tune command has locked to a channel and printed [LOCKED] and there's no other client connected, you can start to capture some raw data.
+
+To be sure that the frequncy is useful, for you perform a channel scan
+
+/opt/bin/mediaclient --tsscan /dev/dvb/adapter1/dvr0
+
+(Again, take care about adapter number, it's usually adapter1 on set top boxes)
+
+This should give you a list of TV channels on the transponder you are tuned to.
+
+Ensure you have enough space on the storage device for the recording otherwise the box might crash if you run out of space).
+
+In this example, we are saving to the hdd. Amend for your needs
+
+/opt/bin/mediaclient --cat /dev/dvb/adapter1/dvr0 > /media/hdd/test.ts
+
+You can abort/end the capturing by pressing CTRL and C together. Two minutes recording is usually enough. 

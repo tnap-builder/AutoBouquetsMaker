@@ -1,0 +1,11 @@
+This is primarily aimed for UK cable
+
+Transfer NIT_analyser.py to /tmp directory
+Issue following command
+
+python /tmp/NIT_analyser.py
+
+The following files will be created
+nit.log
+nit.bin
+dvbc.xml

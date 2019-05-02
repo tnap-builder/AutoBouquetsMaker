@@ -1,0 +1,26 @@
+The file was by Athoik using some work by Dave Chapman. Does not work on all receivers
+See this thread: https://forums.openpli.org/topic/50899-record-complete-transport-stream/
+
+Unzip and transfer the attached file to your HDD
+ChMod 755 the folder and sub directories
+
+'Telnet' to your receiver and install dvbsnoop with
+opkg install dvbsnoop
+
+Change directory to where the dvbstream file is for your receiver
+
+cd /media/hdd/dvbstream/mips
+or
+cd /media/hdd/dvbstream/arm
+
+On your receiver select the frequency you want to record
+For example, Canal Digital on 1 west uses the following home frequency: frequency="12418000" symbol_rate="28000000" Vertical
+Ensure no other recordings are taking place or are due to take place
+
+Issue the following command using Putty/Terminal or similar
+
+./dvbstream `dvbsnoop -s pidscan| awk '/PID found/ { print $3 }' | xargs` -o>1w_12418.ts
+
+Stop with Ctrl & C
+
+A recording about 60 seconds long should be enough for inspection purposes using tools such as Transedit
